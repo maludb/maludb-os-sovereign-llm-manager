@@ -281,9 +281,13 @@ R1–R7 are decided and not asked again.
 
 ## 15. The owner's answers
 
-_(awaiting)_
+2026-10-17 — **D1–D16 all the recommendations.** The open questions (a)–(c) were not answered separately and are taken as
+recommended (re-point the kernel's local model rows at a node at Phase 5; the Watcher's note as a Spaces DM else the kernel
+inbox; the spelling *sovereign*) — the owner may still say otherwise. The server design's S1–S12 were answered the same day
+(S1 the name kept, S12 public, the rest the recommendations). The design is approved.
 
 ## 16. State
 
-2026-10-16 — designed; nothing built. Local repository `/srv/apps/sovereign_llm_manager` (no origin yet). Next: the
-owner's answers to §13 here and §12 of the server design → K57 (`db/184`) and Phase 0 of both.
+2026-10-16 — designed. 2026-10-17 — **APPROVED by the owner** (§15). Nothing built. Local repository `/srv/apps/sovereign_llm_manager`;
+the GitHub repositories (`maludb-os-sovereign-llm-manager` public, `maluos-local-llm-server` public) are the owner's to create. Next:
+K57 (`db/184`) in the kernel, then Phase 0 of both (§10 here; the server's §10 steps 1–3).
