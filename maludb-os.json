@@ -1,0 +1,369 @@
+{
+  "schema": "maludb-os.application/1",
+  "catalog_key": "sovereign_llm_manager",
+  "name": "Sovereign LLM Manager",
+  "description": "The business's window on the machines that run its models: every node running maluos-local-llm-server on one set of screens \u2014 the fleet's health, each node's queue live, the run history with its numbers (queue wait, time to first token, tokens per second, load time, fallbacks), token usage by period, key, model and lane, the models on each node (pull, warm, unload, keep warm, the cloud fallback a model may take), the keys callers hold and the policies the node enforces. Operators act on the queue and the models; the LLM Ops Expert answers and proposes, the Fleet Watcher writes the morning note, and the usage is shared with the ledger. It never serves an inference and never speaks to Ollama \u2014 only to nodes.",
+  "business_area": "Technology & Infrastructure",
+  "category": "platform",
+  "icon": "feather-cpu",
+  "version": "0.1.0",
+  "criticality": "medium",
+  "vhost": {
+    "label": "llm",
+    "document_root": "html",
+    "internal_port_env": "APP_INTERNAL_PORT"
+  },
+  "database": {
+    "suffix": "sovereign_llm_manager",
+    "migrations": "db",
+    "roles": {
+      "rw": "sovereign_llm_manager_rw",
+      "records_ro": "sovereign_llm_manager_records_ro",
+      "activity_ro": "sovereign_llm_manager_activity_ro"
+    }
+  },
+  "env": {
+    "required": [
+      "APP_NAME",
+      "APP_URL",
+      "DB_HOST",
+      "DB_PORT",
+      "DB_NAME",
+      "DB_USER",
+      "DB_PASSWORD",
+      "MCP_RECORDS_DB_USER",
+      "MCP_RECORDS_DB_PASSWORD",
+      "MCP_ACTIVITY_DB_USER",
+      "MCP_ACTIVITY_DB_PASSWORD",
+      "APP_INTERNAL_PORT",
+      "MCP_RECORDS_PORT",
+      "MCP_ACTIVITY_PORT",
+      "ACTION_TOKEN_KEY",
+      "ACTIONS_RELAY_KEY",
+      "OS_APPLICATION_TOKEN",
+      "OS_INTERNAL_URL",
+      "OS_LAUNCHER_URL",
+      "APP_KEY",
+      "MALUDB_API_URL",
+      "MALUDB_API_TOKEN",
+      "SL_SECRETS_KEY"
+    ],
+    "optional": [
+      "MALUMAIL_API_KEY",
+      "MAIL_FROM",
+      "MAIL_FROM_NAME",
+      "API_CORS_ORIGINS"
+    ]
+  },
+  "services": [
+    "deploy/sovereign_llm_manager-activity-ingest.service",
+    "deploy/sovereign_llm_manager-activity-ingest.timer",
+    "deploy/sovereign_llm_manager-activity-mcp.service",
+    "deploy/sovereign_llm_manager-directory-sync.service",
+    "deploy/sovereign_llm_manager-directory-sync.timer",
+    "deploy/sovereign_llm_manager-records-mcp.service",
+    "deploy/sovereign_llm_manager-worker.service",
+    "deploy/sovereign_llm_manager-worker.timer"
+  ],
+  "endpoints": [
+    {
+      "name": "Web UI",
+      "kind": "ui",
+      "path": "/",
+      "auth_kind": "none",
+      "agent_reachable": false
+    },
+    {
+      "name": "Health",
+      "kind": "http_api",
+      "path": "/api/v1/health",
+      "auth_kind": "none",
+      "agent_reachable": false
+    },
+    {
+      "name": "Records MCP",
+      "kind": "mcp",
+      "path": "/mcp/records",
+      "port_env": "MCP_RECORDS_PORT",
+      "auth_kind": "bearer",
+      "agent_reachable": true,
+      "mcp_surface_version": 1
+    },
+    {
+      "name": "Activity MCP",
+      "kind": "mcp",
+      "path": "/mcp/activity",
+      "port_env": "MCP_ACTIVITY_PORT",
+      "auth_kind": "bearer",
+      "agent_reachable": true,
+      "mcp_surface_version": 1
+    }
+  ],
+  "actions": {
+    "manifest": "docs/sovereign-llm-manager-action-manifest.md",
+    "registry": "mcp/action_registry.json",
+    "base_url_env": "APP_INTERNAL_PORT"
+  },
+  "skills": [
+    "skills/llm-fleet-overview",
+    "skills/queue-triage",
+    "skills/model-policy",
+    "skills/fallback-reasoning",
+    "skills/usage-explained"
+  ],
+  "sso": {
+    "path": "/sso",
+    "logout_path": "/sso/logout"
+  },
+  "directory": {
+    "reads": true,
+    "writes": false
+  },
+  "assistant": {
+    "command_bar": true,
+    "agent": "expert"
+  },
+  "roles": [
+    {
+      "key": "viewer",
+      "name": "Viewer",
+      "description": "Sees the fleet, the queue, the runs, the models and the usage; never changes anything.",
+      "capability": "read",
+      "is_admin": false,
+      "rights": [
+        "fleet.read",
+        "queue.read",
+        "runs.read",
+        "models.read",
+        "usage.read",
+        "keys.read_own"
+      ]
+    },
+    {
+      "key": "user",
+      "name": "Operator",
+      "description": "Everything a Viewer does, and works the fleet: acts on the queue, pulls and warms models, mints their own keys, writes notes.",
+      "capability": "write",
+      "is_admin": false,
+      "rights": [
+        "fleet.read",
+        "queue.read",
+        "runs.read",
+        "models.read",
+        "usage.read",
+        "keys.read_own",
+        "queue.act",
+        "models.operate",
+        "keys.mint_own",
+        "notes.write"
+      ]
+    },
+    {
+      "key": "admin",
+      "name": "LLM admin",
+      "description": "Every right: the nodes, every key, the policies and prices, the settings and the payloads. A super-admin holds this role.",
+      "capability": "admin",
+      "is_admin": true,
+      "rights": [
+        "fleet.read",
+        "queue.read",
+        "runs.read",
+        "models.read",
+        "usage.read",
+        "keys.read_own",
+        "queue.act",
+        "models.operate",
+        "keys.mint_own",
+        "notes.write",
+        "nodes.admin",
+        "keys.admin",
+        "policies.admin",
+        "settings.admin",
+        "payloads.read"
+      ]
+    }
+  ],
+  "shares": [
+    {
+      "tool": "usage_by_period",
+      "description": "Tokens, runs, failures, fallbacks and the notional cost by key, model, lane, node or day for a period (os.llm-usage/1)",
+      "scoped": false
+    },
+    {
+      "tool": "nodes_status",
+      "description": "Every node: name, status, backend, lanes with queue depth and expected drain, loaded models (os.llm-nodes/1)",
+      "scoped": false
+    },
+    {
+      "tool": "models_available",
+      "description": "The models a sibling may name on each node: name, lane, capabilities, context length, loaded, status (os.llm-models/1)",
+      "scoped": false
+    }
+  ],
+  "reads": [],
+  "agents": [
+    {
+      "key": "expert",
+      "name": "LLM Ops Expert",
+      "job_description": "os/expert.md",
+      "access_capability": "write",
+      "hired_on_install": true,
+      "roles": [
+        "user"
+      ],
+      "tool_grants": {
+        "Records MCP": [
+          "nodes_list",
+          "node_show",
+          "node_status",
+          "queue_list",
+          "queue_show",
+          "runs_list",
+          "run_show",
+          "run_timeline",
+          "runs_stats",
+          "models_list",
+          "model_show",
+          "model_drift",
+          "models_pullable",
+          "keys_list",
+          "key_show",
+          "usage_by_period",
+          "usage_by_key",
+          "usage_by_model",
+          "fallbacks_list",
+          "notices_list",
+          "prices_list",
+          "settings_show",
+          "capacity_summary",
+          "find_members",
+          "find_departments"
+        ],
+        "Activity MCP": [
+          "member_activity",
+          "record_history",
+          "agent_activity",
+          "activity_search",
+          "recent_activity",
+          "node_trail"
+        ],
+        "Actions MCP": [
+          "job_cancel",
+          "job_priority_set",
+          "job_move",
+          "model_pull",
+          "model_warm",
+          "model_unload",
+          "model_policy_set",
+          "note_post",
+          "key_mint",
+          "key_revoke",
+          "node_register",
+          "node_key_rotate",
+          "node_settings_set",
+          "model_delete",
+          "policy_fallback_set",
+          "lane_pause"
+        ]
+      },
+      "skills": [
+        "skills/llm-fleet-overview",
+        "skills/queue-triage",
+        "skills/model-policy",
+        "skills/fallback-reasoning",
+        "skills/usage-explained"
+      ]
+    },
+    {
+      "key": "fleet_watcher",
+      "name": "Fleet Watcher",
+      "job_description": "os/fleet_watcher.md",
+      "access_capability": "read",
+      "hired_on_install": true,
+      "roles": [
+        "viewer"
+      ],
+      "duty": {
+        "name": "The morning note",
+        "schedule_cron": "35 6 * * *",
+        "runbook": "skills/llm-fleet-overview"
+      },
+      "tool_grants": {
+        "Records MCP": [
+          "nodes_list",
+          "node_show",
+          "node_status",
+          "queue_list",
+          "queue_show",
+          "runs_list",
+          "run_show",
+          "run_timeline",
+          "runs_stats",
+          "models_list",
+          "model_show",
+          "model_drift",
+          "models_pullable",
+          "keys_list",
+          "key_show",
+          "usage_by_period",
+          "usage_by_key",
+          "usage_by_model",
+          "fallbacks_list",
+          "notices_list",
+          "prices_list",
+          "settings_show",
+          "capacity_summary",
+          "find_members",
+          "find_departments"
+        ],
+        "Activity MCP": [
+          "member_activity",
+          "record_history",
+          "agent_activity",
+          "activity_search",
+          "recent_activity",
+          "node_trail"
+        ]
+      },
+      "skills": [
+        "skills/llm-fleet-overview",
+        "skills/usage-explained",
+        "skills/fallback-reasoning"
+      ]
+    }
+  ],
+  "approvals": [
+    {
+      "action": "key_mint",
+      "category": "other"
+    },
+    {
+      "action": "key_revoke",
+      "category": "other"
+    },
+    {
+      "action": "lane_pause",
+      "category": "other"
+    },
+    {
+      "action": "model_delete",
+      "category": "deletion"
+    },
+    {
+      "action": "node_key_rotate",
+      "category": "other"
+    },
+    {
+      "action": "node_register",
+      "category": "other"
+    },
+    {
+      "action": "node_settings_set",
+      "category": "other"
+    },
+    {
+      "action": "policy_fallback_set",
+      "category": "other"
+    }
+  ]
+}

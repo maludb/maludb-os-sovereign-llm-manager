@@ -2,10 +2,10 @@
 <?php
 declare(strict_types=1);
 /**
- * Rewrite maludb-os.json's approvals[] from docs/sovereign_llm_manager-action-manifest.md, so the categories the kernel pauses on are exactly the
+ * Rewrite maludb-os.json's approvals[] from docs/sovereign-llm-manager-action-manifest.md, so the categories the kernel pauses on are exactly the
  * manifest's "Agent approval" column — one source. `php bin/sync_approvals.php` writes; `--check` verifies only (non-zero when stale).
  */
-$manifest = file(__DIR__ . '/../docs/sovereign_llm_manager-action-manifest.md', FILE_IGNORE_NEW_LINES) ?: [];
+$manifest = file(__DIR__ . '/../docs/sovereign-llm-manager-action-manifest.md', FILE_IGNORE_NEW_LINES) ?: [];
 $mode = '';
 $approvals = [];
 foreach ($manifest as $line) {

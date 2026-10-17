@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /**
- * Build mcp/action_registry.json from docs/sovereign_llm_manager-action-manifest.md (Spaces' builder, copied 2026-10-05).
+ * Build mcp/action_registry.json from docs/sovereign-llm-manager-action-manifest.md (Spaces' builder, copied 2026-10-05).
  *
  * The manifest is the contract between the voice surface and the app: every screen the
  * assistant can reach and every action it can perform. This script turns it into the
@@ -25,7 +25,7 @@ declare(strict_types=1);
  *   php bin/build_action_registry.php --approvals  # also rewrite maludb-os.json approvals[]
  */
 
-const MANIFEST = __DIR__ . '/../docs/sovereign_llm_manager-action-manifest.md';
+const MANIFEST = __DIR__ . '/../docs/sovereign-llm-manager-action-manifest.md';
 const REGISTRY = __DIR__ . '/../mcp/action_registry.json';
 const APP_MANIFEST = __DIR__ . '/../maludb-os.json';
 const WEB_ROOT = __DIR__ . '/../html';
@@ -339,7 +339,7 @@ function param(string $piece, bool $required, string $hint): array
 }
 
 $registry = [
-    'generated_from' => 'docs/sovereign_llm_manager-action-manifest.md',
+    'generated_from' => 'docs/sovereign-llm-manager-action-manifest.md',
     'generated_at' => date('c'),
     'screens' => $screens,
     'actions' => $actions,
