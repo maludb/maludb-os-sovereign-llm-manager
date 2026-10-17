@@ -1,0 +1,10 @@
+[Unit]
+Description=Sovereign LLM Manager worker — one pass (key-usage pruning; the slices add the node pulls, the queue snapshot, the usage rollup and the notices)
+After=network.target postgresql.service
+
+[Service]
+Type=oneshot
+User=www-data
+Group=www-data
+WorkingDirectory={{APP_DIR}}
+ExecStart=/usr/bin/php {{APP_DIR}}/bin/worker.php

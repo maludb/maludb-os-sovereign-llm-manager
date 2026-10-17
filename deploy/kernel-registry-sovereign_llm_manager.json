@@ -1,0 +1,28 @@
+{
+  "schema": "maludb-os.registry/1",
+  "app_key": "sovereign_llm_manager",
+  "name": "Sovereign LLM Manager",
+  "note": "The installer (bin/app_install.php, step 'registry') writes mcp/registries/sovereign_llm_manager.json in the kernel from this file's `resolve` block plus mcp/action_registry.json. Each resolve tool answers a plain LIST of rows carrying id_field and label_field when given `q` alone. The kit resolves people and departments; each slice adds the entities its actions name (a node, a model, a caller key).",
+  "resolve": {
+    "member": {
+      "tool": "find_members",
+      "query_param": "q",
+      "id_field": "member_id",
+      "label_field": "display_name",
+      "params": [
+        "member",
+        "person",
+        "agent"
+      ]
+    },
+    "department": {
+      "tool": "find_departments",
+      "query_param": "q",
+      "id_field": "department_id",
+      "label_field": "name",
+      "params": [
+        "department"
+      ]
+    }
+  }
+}
